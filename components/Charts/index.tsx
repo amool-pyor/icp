@@ -7,22 +7,6 @@ import DashboardChartOptionsBar from '../atoms/DashboardChartOptionsBar';
 import PanelTitleBar from '../atoms/PanelTitleBar';
 import CustomChart from './customChart'
 
-const option = {
-    xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    },
-    yAxis: {
-        type: 'value'
-    },
-    series: [
-        {
-            data: [150, 230, 224, 218, 135, 147, 260],
-            type: 'line'
-        }
-    ]
-};
-
 export interface PanelCardProps {
     title: string,
     globe: any,
@@ -30,7 +14,6 @@ export interface PanelCardProps {
     chartText: string,
     chartStyle?: CSSProperties,
     cardStyle?: CSSProperties,
-    options?: any
 }
 
 const Chart = ({
@@ -40,11 +23,43 @@ const Chart = ({
     chartTitle,
     cardStyle,
     chartStyle,
-    options
 }: PanelCardProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [projectList, SetProjectList] = useState<string[]>([])
-    const [projectName, setProjectName] = useState<string>("")
+    const [projectName, setProjectName] = useState<string>("");
+    const [options, setOptions] = useState<any>({})
+
+
+    const genrateOptions = (xAxisData: string[], yAxisData: number[]) => {
+        const option = {
+            xAxis: {
+                type: 'category',
+                data: xAxisData
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    data: yAxisData,
+                    type: 'line'
+                }
+            ]
+        };
+
+        setOptions(option);
+        return;
+    }
+
 
     useEffect(() => {
         const getProjects = async () => {
@@ -80,9 +95,71 @@ const Chart = ({
         getProjects()
     }, []);
 
-    useEffect(()=>{
-        console.log(projectName)
-    },[projectName])
+    useEffect(() => {
+        setIsLoading(true)
+        if (projectName != "") {
+            // console.log(projectName, "line 84")
+            const data = async () => {
+                let response = await getCubeData({
+                    "measures": [
+                        "IcpSystemParameters.distributed_e8s_equivalent",
+                        "IcpSystemParameters.round"
+                    ],
+                    "timeDimensions": [
+                        {
+                            "dimension": "IcpSystemParameters.date",
+                            "granularity": "day"
+                        }
+                    ],
+                    "order": {
+                        "IcpSystemParameters.count": "desc"
+                    },
+                    "dimensions": [
+                        "IcpSystemParameters.canister_id"
+                    ],
+                    "filters": [
+                        {
+                            "member": "IcpSystemParameters.canister_id",
+                            "operator": "equals",
+                            "values": [
+                                `${projectName}`
+                            ]
+                        }
+                    ]
+                }, { type: CUBE_TYPE.SERVER })
+
+                response = response.map((item: any) => {
+                    return {
+                        date: new Date(item["IcpSystemParameters.date"]).toLocaleDateString(),
+                        distributed_e8s_equivalent: item["IcpSystemParameters.distributed_e8s_equivalent"],
+                        round: item["IcpSystemParameters.round"]
+                    }
+                })
+                response.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                const xAxisData = response.map((item: any) => {
+                    return item.date;
+                })
+                const yAxisData = response.map((item: any, index: number) => {
+                    let value: number = 0;
+                    if (index != 0) {
+                        // console.log(item.round, index, response[index - 1].round);
+                        if (item.round != response[index - 1].round) {
+                            value = item.distributed_e8s_equivalent * Math.pow(10, -8);
+                        }
+                    } else {
+                        value = item.distributed_e8s_equivalent * Math.pow(10, -8);
+                    }
+                    return value;
+                })
+                // console.log(response)
+                // console.log(xAxisData, yAxisData)
+                genrateOptions(xAxisData, yAxisData)
+                setIsLoading(false)
+            }
+
+            data()
+        }
+    }, [projectName])
 
     return (
         <Card

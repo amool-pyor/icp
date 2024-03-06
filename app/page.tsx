@@ -11,7 +11,7 @@ import Chart from "@/components/Charts";
 import { CUBE_TYPE, getCubeData } from "clients/cube";
 
 export default function icp() {
- 
+
   async function test() {
     const rootCanisterId = Principal.fromText(
       "vtrom-gqaaa-aaaaq-aabia-cai"
@@ -69,8 +69,8 @@ export default function icp() {
 
   return <Chart
     title="Test"
-    chartTitle={"chartTitle"}
-    chartText={"chartText"}
+    chartTitle={"Daily Maturity"}
+    chartText={"Daily Maturity"}
     globe={{}}
     cardStyle={{
       padding: "0",

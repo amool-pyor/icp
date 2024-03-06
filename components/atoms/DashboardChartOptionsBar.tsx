@@ -39,7 +39,6 @@ export default function DashboardChartOptionsBar({
 }: DashboardChartOptionsBarProps) {
 
     const handleProjectSourceReset = (e: string) => {
-        console.log(e,"testing")
         setProjectName(e);
     }
 

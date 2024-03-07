@@ -1,7 +1,7 @@
 import { Card, Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { CUBE_TYPE, getCubeData } from 'clients/cube';
-import Projects from 'clients/Projects';
+import { Projects } from 'clients/config';
 import React, { CSSProperties, useState, useEffect } from 'react'
 import DashboardChartOptionsBar from '../atoms/DashboardChartOptionsBar';
 import PanelTitleBar from '../atoms/PanelTitleBar';
@@ -14,6 +14,8 @@ export interface PanelCardProps {
     chartText: string,
     chartStyle?: CSSProperties,
     cardStyle?: CSSProperties,
+    projectList?: string[],
+    SetProjectList?: any,
 }
 
 const Chart = ({
@@ -23,9 +25,11 @@ const Chart = ({
     chartTitle,
     cardStyle,
     chartStyle,
+    SetProjectList,
+    projectList,
 }: PanelCardProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [projectList, SetProjectList] = useState<string[]>([])
+    // const [projectList, SetProjectList] = useState<string[]>([])
     const [projectName, setProjectName] = useState<string>("");
     const [options, setOptions] = useState<any>({})
 

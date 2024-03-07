@@ -1,93 +1,167 @@
 "use client"
-
-import React, { useEffect, useState } from "react";
-import { Principal } from "@dfinity/principal";
-import { SnsGovernanceCanister } from "@dfinity/sns";
-import { IcrcLedgerCanister } from "@dfinity/ledger"
-// import { IcrcLedgerCanister } from "@dfinity/ledger-icrc";
-
-import { Actor, HttpAgent } from "@dfinity/agent";
+import React, { CSSProperties, useState } from "react";
+import Head from "next/head";
+import Title from "@/components/atoms/Title";
+import TabBar from "@/components/atoms/TabBar";
 import Chart from "@/components/Charts";
-import { CUBE_TYPE, getCubeData } from "clients/cube";
+import Simulator from "@/components/Simulator";
+
+
+const tabPanelLabelStyle: CSSProperties = {
+  fontSize: 16,
+}
+
+
+const topContainer: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: "#101213",
+  overflow: "auto",
+}
+
+const extensionContainer: CSSProperties = {
+  height: "100%",
+  width: "70vw",
+  padding: "5px",
+  position: "absolute",
+  left: "15vw",
+  right: "15vw",
+  justifyContent: "center",
+  alignItems: "center"
+}
+
+
+const chartsContainer: CSSProperties = {
+  height: "37.5vh",
+  padding: "5px",
+  display: "flex",
+  flexDirection: "column",
+}
+
+enum TAB_LABEL_MAPPER {
+  "",
+  "Charts",
+  "Fee Calculator",
+}
 
 export default function icp() {
+  const [projectList, SetProjectList] = useState<string[]>([])
 
-  async function test() {
-    const rootCanisterId = Principal.fromText(
-      "vtrom-gqaaa-aaaaq-aabia-cai"
-    );
-    const {
-      nervousSystemParameters,
-      metadata,
-      getNeuron,
-      listNeurons,
-      listProposals,
-    } = SnsGovernanceCanister.create({
-      canisterId: rootCanisterId,
-    });
+  // return <div style={{ backgroundColor: 'black', height: "100vh", alignItems: "center" }}>
+  //   <TabPanels
+  //     defaultActiveKey="1"
+  //     items={[
+  //       {
+  //         label: <span style={tabPanelLabelStyle}>
+  //           Chart
+  //         </span>,
+  //         key: '1',
+  //         children: <Chart
+  //           title="Test"
+  //           chartTitle={"Daily Maturity"}
+  //           chartText={"Daily Maturity"}
+  //           globe={{}}
+  //           cardStyle={{
+  //             padding: "0",
+  //             margin: "0",
+  //             borderColor: "transparent",
+  //             backgroundColor: "#16181d",
+  //             borderRadius: 5,
+  //             width: "1300px",
+  //           }} chartStyle={{
+  //             width: "1300px",
+  //             margin: "0",
+  //             padding: "0",
+  //             color: "#FAFDFE",
+  //             borderRadius: 5,
+  //             borderColor: "transparent",
+  //             height: "520px",
+  //           }} />
+  //       },
+  //       {
+  //         label: <span style={tabPanelLabelStyle}>
+  //           Fee Calculator
+  //         </span>,
+  //         key: '2',
+  //         children: <p>Dummy Content 2</p>
+  //       }
+  //     ]}
+  //     style={
+  //       { justifyContent: 'left', textAlign: 'left', backgroundColor: "black" }
+  //     }
+  //   />
+  // </div>
 
-    const agent = new HttpAgent({ host: "https://ic0.app" });
-    const ledger = IcrcLedgerCanister.create({
-      agent,
-      canisterId: rootCanisterId
-    });
+  return <div style={topContainer}>
+    <Head>
+      <title>PYOR | Compound</title>
+    </Head>
+    <div style={extensionContainer}>
+      <Title
+        level={3}
+        style={{
+          color: "#fafdfe",
+          display: "flex",
+          justifyContent: "center",
+          margin: "10px auto",
+        }}
+      >
+        ICP
+      </Title>
 
-    // let nervousSystemParametersData = await nervousSystemParameters({
-    //   certified: false,
-    // });
-    // let metadataData = await metadata({ certified: false });
-    // let listNeuronData = await listNeurons({});
-    // let neuron_id: any = listNeuronData[0].id[0];
-    // let getNeuronData = await getNeuron({ neuronId: neuron_id });
-    // let listProposalsData = await listProposals({ limit: 1 });
-    // let mdData = await totalTokensSupply({ certified: false });
-
-    // console.log(nervousSystemParametersData, "sara-icp");
-    // console.log(listNeuronData, "sara-icp");
-    // console.log(getNeuronData, "sara-icp");
-    // console.log(listProposalsData, "sara-icp");
-    // console.log(metadataData)
-    try {
-      let datas = await ledger.totalTokensSupply({ certified: false });
-      console.log(datas);
-    } catch (error) {
-      console.log(error)
-    }
-
-    // let Rmin = nervousSystemParametersData.voting_rewards_parameters.initial_reward_rate_basis_points
-    // let Rmax = nervousSystemParametersData.voting_rewards_parameters.final_reward_rate_basis_points
-    // let tdelta = nervousSystemParametersData.voting_rewards_parameters.reward_rate_transition_duration_seconds
-
-    // let ddmax = nervousSystemParametersData.max_dissolve_delay_seconds
-    // let dd = getNeuronData.dissolve_state[0].WhenDissolvedTimestampSeconds
-    // let amax = nervousSystemParametersData.max_neuron_age_for_age_bonus
-    // let neuron_created_timestamp =  getNeuronData.aging_since_timestamp_seconds
-    // let TS = getNeuronData.cached_neuron_stake_e8s
-    // let TVP = listProposalsData?.proposals[0].latest_tally[0].total
-  }
-
-
-  return <Chart
-    title="Test"
-    chartTitle={"Daily Maturity"}
-    chartText={"Daily Maturity"}
-    globe={{}}
-    cardStyle={{
-      padding: "0",
-      margin: "0",
-      borderColor: "transparent",
-      backgroundColor: "#16181d",
-      borderRadius: 5,
-      width: "1300px",
-    }} chartStyle={{
-      width: "1300px",
-      margin: "0",
-      padding: "0",
-      color: "#FAFDFE",
-      borderRadius: 5,
-      borderColor: "transparent",
-      height: "520px",
-    }} />;
-  // return <div>Hello</div>
+      <TabBar
+        type="card"
+        theme={{
+          token: {
+            colorPrimary: "#159FFA",
+            colorBgContainer: "#53565D",
+            colorBorderSecondary: "#53565D",
+          },
+        }}
+        items={[
+          {
+            key: "1",
+            label: TAB_LABEL_MAPPER["1"],
+            children: (
+              <div style={chartsContainer}>
+                <Chart
+                  title="Test"
+                  chartTitle={"Daily Maturity"}
+                  chartText={"Daily Maturity"}
+                  projectList={projectList}
+                  SetProjectList={SetProjectList}
+                  globe={{}}
+                  cardStyle={{
+                    padding: "0",
+                    margin: "0",
+                    borderColor: "transparent",
+                    backgroundColor: "#16181d",
+                    borderRadius: 5,
+                    width: "1300px",
+                  }} chartStyle={{
+                    width: "1300px",
+                    margin: "0",
+                    padding: "0",
+                    color: "#FAFDFE",
+                    borderRadius: 5,
+                    borderColor: "transparent",
+                    height: "520px",
+                  }} />
+              </div>
+            ),
+          },
+          {
+            key: "2",
+            label: TAB_LABEL_MAPPER["2"],
+            children: <Simulator
+              projectList={projectList} />,
+          },
+        ]}
+      />
+    </div>
+  </div>
 }
 

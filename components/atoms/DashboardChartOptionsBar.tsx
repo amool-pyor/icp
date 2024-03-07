@@ -51,7 +51,7 @@ export default function DashboardChartOptionsBar({
                             size={size ? size : defaultSize}
                             bordered={bordered ? bordered : defaultBordered}
                             defaultValue={projectName}
-                            style={{ width: '100%', color: 'white' }}
+                            style={{ width: '100%', color: 'white', border: "1px solid white", borderRadius:"6px" }}
                             onChange={handleProjectSourceReset}
                             value={projectName}
                             options={options}

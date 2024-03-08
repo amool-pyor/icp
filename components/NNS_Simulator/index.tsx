@@ -1,9 +1,7 @@
-import React, { CSSProperties, useEffect, useState } from 'react'
+import React, { CSSProperties, useState } from 'react'
 import Card from '../atoms/Card'
-import DashboardChartOptionsBar from '../atoms/DashboardChartOptionsBar';
 
 import { Principal } from "@dfinity/principal";
-import { createAgent, hexStringToUint8Array } from '@dfinity/utils';
 import { GovernanceCanister } from "@dfinity/nns";
 import { Row, Spin } from 'antd';
 

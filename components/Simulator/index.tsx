@@ -6,7 +6,7 @@ import { Principal } from "@dfinity/principal";
 import { SnsGovernanceCanister } from "@dfinity/sns";
 import { hexStringToUint8Array } from '@dfinity/utils';
 import { IcrcLedgerCanister } from "@dfinity/ledger-icrc";
-import { Projects, R_t_vlaue } from 'clients/config';
+import { Projects } from 'clients/config';
 import { Row, Spin } from 'antd';
 
 

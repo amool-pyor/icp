@@ -5,6 +5,7 @@ import Title from "@/components/atoms/Title";
 import TabBar from "@/components/atoms/TabBar";
 import Chart from "@/components/Charts";
 import Simulator from "@/components/Simulator";
+import NNS_Simulator from "@/components/NNS_Simulator";
 
 
 const tabPanelLabelStyle: CSSProperties = {
@@ -45,6 +46,7 @@ enum TAB_LABEL_MAPPER {
   "",
   "Charts",
   "Fee Calculator",
+  "NNS Calculator"
 }
 
 export default function icp() {
@@ -158,6 +160,11 @@ export default function icp() {
             label: TAB_LABEL_MAPPER["2"],
             children: <Simulator
               projectList={projectList} />,
+          },
+          {
+            key: "3",
+            label: TAB_LABEL_MAPPER["3"],
+            children: <NNS_Simulator />,
           },
         ]}
       />

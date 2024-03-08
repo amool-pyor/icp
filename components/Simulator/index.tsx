@@ -128,9 +128,9 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
                         options={projectList}
                     />
                 </li>
-                <li style={{ marginBottom: "20px" }} >
+                {/* <li style={{ marginBottom: "20px" }} >
                     <input type="number" placeholder='Year' style={{ outline: "none", backgroundColor: "black", borderRadius: "6px", display: "block", padding: "5px 10px", width: "100%" }} onChange={(e) => { setYear(e.target.value) }} value={year} />
-                </li>
+                </li> */}
                 <li style={{ marginBottom: "10px" }}>
                     <button style={{ padding: "5px 10px", borderRadius: "6px", cursor: "pointer", backgroundColor: "#159ffa" }} onClick={handleCalculate} >Calculate</button>
                 </li>

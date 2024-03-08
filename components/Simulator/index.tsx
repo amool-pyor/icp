@@ -56,11 +56,18 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
             let nervousSystemParametersData = await nervousSystemParameters({
                 certified: false,
             });
-            let dissolve_delay = Number(getNeuronData.dissolve_state[0]?.DissolveDelaySeconds);
+            let max_dissolve_delay_per = (Number(nervousSystemParametersData.max_dissolve_delay_bonus_percentage[0])) / 100;
+            let dissolve_delay = (Number(getNeuronData.dissolve_state[0]?.DissolveDelaySeconds)) / (3600 * 24);
+            let max_dissolve_delay_seconds = (Number(nervousSystemParametersData.max_dissolve_delay_seconds[0])) / (3600 * 24);
+            let dissolve_delay_bonus = (Math.min(1, dissolve_delay / max_dissolve_delay_seconds)) * max_dissolve_delay_per;
             let neuron_created_timestamp = Number(getNeuronData.aging_since_timestamp_seconds);
-            let neuron_age = Number(new Date().getTime()) - neuron_created_timestamp;
-            let amax = Number(nervousSystemParametersData.max_neuron_age_for_age_bonus[0]);
-            const age_bonus = (0.25 / amax) * neuron_age;
+            let neuron_age = (Number(new Date().getTime()) - neuron_created_timestamp * 1000) / (3600 * 24 * 1000);
+            let amax = (Number(nervousSystemParametersData.max_neuron_age_for_age_bonus[0])) / (3600 * 24);
+            // const age_bonus = (0.25 / amax) * neuron_age;
+            let max_age_bonus_per = (Number(nervousSystemParametersData.max_age_bonus_percentage[0])) / 100;
+            const age_bonus = Math.min(max_age_bonus_per, (neuron_age / amax) * max_age_bonus_per);
+            console.log("age_bonus", age_bonus, "dissolve_delay", dissolve_delay, "neuron_age", neuron_age, new Date().getTime(), "neuron_created_timestamp", neuron_created_timestamp);
+            console.log("dissolve_delay_bonus", dissolve_delay_bonus, "amax", amax);
             const ledger = IcrcLedgerCanister.create({
                 canisterId: rootLedgerCanisterId
             })
@@ -70,17 +77,18 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
             let rmax = (Number(nervousSystemParametersData.voting_rewards_parameters[0]?.final_reward_rate_basis_points[0])) / 100;
             let trans_length = (Number(nervousSystemParametersData.voting_rewards_parameters[0]?.reward_rate_transition_duration_seconds[0])) / (60 * 60 * 24 * 365);
 
-            let RT_value = (rmin + ((rmax - rmin) * (Math.max(trans_length - 0, 0) / trans_length) ** 2))/100;
+            let RT_value = (rmin + ((rmax - rmin) * (Math.max(trans_length - 0, 0) / trans_length) ** 2)) / 100;
             console.log(RT_value, rmin, rmax, trans_length, ((rmax - rmin) * (Math.max(trans_length - 0, 0) / trans_length)))
 
             let TVP = Number(listProposalsData?.proposals[0].latest_tally[0].total);
             let TS = Number(getNeuronData.cached_neuron_stake_e8s) * (Math.pow(10, -8));
-            let VP = TS * Number(dissolve_delay) * Number(age_bonus);
+            let VP = TS * (1 + dissolve_delay_bonus) * (1 + age_bonus);
             let TR = (RT_value) * Number(icrc1_total_supply);
 
-            console.log(TVP, TS, VP, TR)
-            let APY_value = (VP * TR) / (TVP * TS);
-            console.log(APY_value);
+            console.log("TVP", TVP, "TS", TS, "VP", VP, "TR", TR)
+            console.log("(VP / TVP) * TR", (VP / TVP) * TR)
+            let APY_value = (((VP * TR) / (TVP * TS)) * 100).toFixed(2)
+            console.log("APY_value", APY_value);
 
             setAPY(APY_value.toString());
             setIsLoading(false);
@@ -143,8 +151,8 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
                             {
                                 APY ?
                                     <>
-                                        <span>Max maturity APY </span>
-                                        <span>{APY}</span>
+                                        <span>Max maturity APY = </span>
+                                        <span>{APY}%</span>
                                     </>
                                     :
                                     null

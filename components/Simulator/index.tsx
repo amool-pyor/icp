@@ -56,23 +56,30 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
             let nervousSystemParametersData = await nervousSystemParameters({
                 certified: false,
             });
-            let dissolve_delay = getNeuronData.dissolve_state[0]?.DissolveDelaySeconds;
-            let neuron_created_timestamp = getNeuronData.aging_since_timestamp_seconds;
-            let neuron_age = BigInt(new Date().getTime()) - neuron_created_timestamp;
-            let amax: any = nervousSystemParametersData.max_neuron_age_for_age_bonus;
-            const age_bonus = neuron_age / BigInt(parseFloat(amax[0]));
+            let dissolve_delay = Number(getNeuronData.dissolve_state[0]?.DissolveDelaySeconds);
+            let neuron_created_timestamp = Number(getNeuronData.aging_since_timestamp_seconds);
+            let neuron_age = Number(new Date().getTime()) - neuron_created_timestamp;
+            let amax = Number(nervousSystemParametersData.max_neuron_age_for_age_bonus[0]);
+            const age_bonus = (0.25 / amax) * neuron_age;
             const ledger = IcrcLedgerCanister.create({
                 canisterId: rootLedgerCanisterId
             })
             let icrc1_total_supply = await ledger.totalTokensSupply({ certified: false });
 
-            let TVP = listProposalsData?.proposals[0].latest_tally[0].total;
-            let TS = getNeuronData.cached_neuron_stake_e8s;
-            let VP = TS * dissolve_delay * age_bonus;
-            let TR = BigInt(parseInt(R_t_vlaue[year][0])) * icrc1_total_supply;
+            let rmin = (Number(nervousSystemParametersData.voting_rewards_parameters[0]?.initial_reward_rate_basis_points[0])) / 100;
+            let rmax = (Number(nervousSystemParametersData.voting_rewards_parameters[0]?.final_reward_rate_basis_points[0])) / 100;
+            let trans_length = (Number(nervousSystemParametersData.voting_rewards_parameters[0]?.reward_rate_transition_duration_seconds[0])) / (60 * 60 * 24 * 365);
 
-            let APY_value = (VP * TR) / (TVP * TS);
+            let RT_value = (rmin + ((rmax - rmin) * (Math.max(trans_length - 0, 0) / trans_length) ** 2))/100;
+            console.log(RT_value, rmin, rmax, trans_length, ((rmax - rmin) * (Math.max(trans_length - 0, 0) / trans_length)))
+
+            let TVP = Number(listProposalsData?.proposals[0].latest_tally[0].total);
+            let TS = Number(getNeuronData.cached_neuron_stake_e8s) * (Math.pow(10, -8));
+            let VP = TS * Number(dissolve_delay) * Number(age_bonus);
+            let TR = (RT_value) * Number(icrc1_total_supply);
+
             console.log(TVP, TS, VP, TR)
+            let APY_value = (VP * TR) / (TVP * TS);
             console.log(APY_value);
 
             setAPY(APY_value.toString());

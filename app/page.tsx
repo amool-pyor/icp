@@ -6,13 +6,10 @@ import TabBar from "@/components/atoms/TabBar";
 import Chart from "@/components/Charts";
 import Simulator from "@/components/Simulator";
 import NNS_Simulator from "@/components/NNS_Simulator";
-
-
+import DemoComponent from "@/components/Demo";
 const tabPanelLabelStyle: CSSProperties = {
   fontSize: 16,
 }
-
-
 const topContainer: CSSProperties = {
   position: "absolute",
   top: 0,
@@ -22,7 +19,6 @@ const topContainer: CSSProperties = {
   backgroundColor: "#101213",
   overflow: "auto",
 }
-
 const extensionContainer: CSSProperties = {
   height: "100%",
   width: "70vw",
@@ -33,25 +29,21 @@ const extensionContainer: CSSProperties = {
   justifyContent: "center",
   alignItems: "center"
 }
-
-
 const chartsContainer: CSSProperties = {
   height: "37.5vh",
   padding: "5px",
   display: "flex",
   flexDirection: "column",
 }
-
 enum TAB_LABEL_MAPPER {
   "",
   "Charts",
   "Fee Calculator",
-  "NNS Calculator"
+  "NNS Calculator",
+  "Leaders Board"
 }
-
 export default function icp() {
   const [projectList, SetProjectList] = useState<string[]>([])
-
   // return <div style={{ backgroundColor: 'black', height: "100vh", alignItems: "center" }}>
   //   <TabPanels
   //     defaultActiveKey="1"
@@ -96,7 +88,6 @@ export default function icp() {
   //     }
   //   />
   // </div>
-
   return <div style={topContainer}>
     <Head>
       <title>PYOR | Compound</title>
@@ -113,7 +104,6 @@ export default function icp() {
       >
         ICP
       </Title>
-
       <TabBar
         type="card"
         theme={{
@@ -166,9 +156,13 @@ export default function icp() {
             label: TAB_LABEL_MAPPER["3"],
             children: <NNS_Simulator />,
           },
+          {
+            key: "4",
+            label: TAB_LABEL_MAPPER["4"],
+            children: <DemoComponent />,
+          }
         ]}
       />
     </div>
   </div>
 }
-

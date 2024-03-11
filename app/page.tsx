@@ -42,7 +42,7 @@ enum TAB_LABEL_MAPPER {
   "NNS Calculator",
   "Leaders Board"
 }
-export default function icp() {
+export default function Icp() {
   const [projectList, SetProjectList] = useState<string[]>([])
   // return <div style={{ backgroundColor: 'black', height: "100vh", alignItems: "center" }}>
   //   <TabPanels

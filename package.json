@@ -19,7 +19,7 @@
     "@dfinity/nns": "^4.0.1",
     "@dfinity/nns-proto": "^1.0.1",
     "@dfinity/principal": "^1.0.1",
-    "@dfinity/sns": "^3.0.0",
+    "@dfinity/sns": "^3.0.1",
     "@dfinity/utils": "^2.1.2",
     "antd": "^5.15.0",
     "echarts": "^5.5.0",

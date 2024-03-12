@@ -1,4 +1,5 @@
-import React, { CSSProperties, useState } from 'react'
+"use client"
+import React, { CSSProperties, useEffect, useState } from 'react'
 import Card from '../atoms/Card'
 
 import { Principal } from "@dfinity/principal";
@@ -18,77 +19,83 @@ const NNS_Simulator = ({ loaderStyle }: SimulatorProps) => {
     const [neuron_id, setNeuronId] = useState<any>();
     const [NNS, setNNS] = useState<string>();
     const [list1, setList1] = useState<any>([])
-    const [list2, setList2] = useState<any>([])
+    const [list2, setList2] = useState<any>([]);
 
+
+    // useEffect(() => {
+    //     console.log(window)
+    // }, [window])
 
 
     const handleCalculate = async () => {
         setIsLoading(true);
         if (!neuron_id) return console.error("neuron_id is null")
-        const rootGovernanceCanisterId = Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai");
-        console.log(rootGovernanceCanisterId)
+        if (typeof window !== "undefined") {
+            const rootGovernanceCanisterId = Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai");
+            console.log(rootGovernanceCanisterId)
 
-        const { listProposals, getNeuron } = GovernanceCanister.create({
-            canisterId: Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai"),
-        });
+            const { listProposals, getNeuron } = GovernanceCanister.create({
+                canisterId: Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai"),
+            });
 
-        const getNeuronData = await getNeuron({ certified: false, neuronId: neuron_id });
-        const listProposalsData: any = await listProposals({
-            request: {
-                limit: 100,
-                includeRewardStatus: [],
-                excludeTopic: [],
-                includeStatus: [],
-                includeAllManageNeuronProposals: true,
-                beforeProposal: undefined
-            },
-            certified: false
-        })
+            const getNeuronData = await getNeuron({ certified: false, neuronId: neuron_id });
+            const listProposalsData: any = await listProposals({
+                request: {
+                    limit: 100,
+                    includeRewardStatus: [],
+                    excludeTopic: [],
+                    includeStatus: [],
+                    includeAllManageNeuronProposals: true,
+                    beforeProposal: undefined
+                },
+                certified: false
+            })
 
-        console.log(getNeuronData)
-        console.log(listProposalsData)
-        let VP: any[] = [];
-        let VPW: number = 0;
-        let totalWeight: number = 0;
-        let UC: any[] = [];
+            console.log(getNeuronData)
+            console.log(listProposalsData)
+            let VP: any[] = [];
+            let VPW: number = 0;
+            let totalWeight: number = 0;
+            let UC: any[] = [];
 
-        listProposalsData.proposals.map((item: any) => {
-            // console.log(item.id)
-            let temp = 0;
-            // console.log([Topics[item.topic]], totalWeight, VPW)
-            if (TopicWeights[Topics[item.topic]]) {
-                totalWeight += TopicWeights[`${Topics[item.topic]}`]
-                console.log(TopicWeights[Topics[item.topic]])
-            } else {
-                totalWeight += 1;
-            }
-            getNeuronData?.recentBallots.map((item2: any) => {
-                if (item2.proposalId === item.id) {
-                    console.log("Ok")
-                    temp = 1;
-                    setList1([...list1, item.id])
-                    VP = [...VP, item.id];
-                    console.log(item.topic, Topics[item.topic])
-                    if (TopicWeights[Topics[item.topic]]) {
-                        VPW += TopicWeights[`${Topics[item.topic]}`]
-                    } else {
-                        VPW += 1;
+            listProposalsData.proposals.map((item: any) => {
+                // console.log(item.id)
+                let temp = 0;
+                // console.log([Topics[item.topic]], totalWeight, VPW)
+                if (TopicWeights[Topics[item.topic]]) {
+                    totalWeight += TopicWeights[`${Topics[item.topic]}`]
+                    console.log(TopicWeights[Topics[item.topic]])
+                } else {
+                    totalWeight += 1;
+                }
+                getNeuronData?.recentBallots.map((item2: any) => {
+                    if (item2.proposalId === item.id) {
+                        console.log("Ok")
+                        temp = 1;
+                        setList1([...list1, item.id])
+                        VP = [...VP, item.id];
+                        console.log(item.topic, Topics[item.topic])
+                        if (TopicWeights[Topics[item.topic]]) {
+                            VPW += TopicWeights[`${Topics[item.topic]}`]
+                        } else {
+                            VPW += 1;
+                        }
+                        return;
                     }
-                    return;
+                })
+                if (temp === 0) {
+                    console.log("done");
+                    UC = [...UC, item.id];
+                    setList2([...list2, item.id]);
                 }
             })
-            if (temp === 0) {
-                console.log("done");
-                UC = [...UC, item.id];
-                setList2([...list2, item.id]);
-            }
-        })
 
 
-        setIsLoading(false);
-        console.log(VP.length, UC, VPW, totalWeight, VP);
+            setIsLoading(false);
+            console.log(VP.length, UC, VPW, totalWeight, VP);
 
-        setNNS((VPW / totalWeight).toString())
+            setNNS((VPW / totalWeight).toString())
+        }
 
         // console.log(TS, TVP)
     }

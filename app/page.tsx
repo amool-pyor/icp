@@ -5,8 +5,13 @@ import Title from "@/components/atoms/Title";
 import TabBar from "@/components/atoms/TabBar";
 import Chart from "@/components/Charts";
 import Simulator from "@/components/Simulator";
-import NNS_Simulator from "@/components/NNS_Simulator";
 import DemoComponent from "@/components/Demo";
+import dynamic from "next/dynamic";
+
+const DynamicComponentWithNoSSR = dynamic(() => import('@/components/NNS_Simulator'), {
+  ssr: false
+})
+
 const tabPanelLabelStyle: CSSProperties = {
   fontSize: 16,
 }
@@ -42,7 +47,7 @@ enum TAB_LABEL_MAPPER {
   "NNS Calculator",
   "Leaders Board"
 }
-export default function Icp() {
+const Icp = () => {
   const [projectList, SetProjectList] = useState<string[]>([])
   // return <div style={{ backgroundColor: 'black', height: "100vh", alignItems: "center" }}>
   //   <TabPanels
@@ -154,7 +159,7 @@ export default function Icp() {
           {
             key: "3",
             label: TAB_LABEL_MAPPER["3"],
-            children: <NNS_Simulator />,
+            children: <DynamicComponentWithNoSSR />,
           },
           {
             key: "4",
@@ -166,3 +171,7 @@ export default function Icp() {
     </div>
   </div>
 }
+
+
+
+export default Icp

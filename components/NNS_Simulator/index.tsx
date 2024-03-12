@@ -4,6 +4,7 @@ import Card from '../atoms/Card'
 import { Principal } from "@dfinity/principal";
 import { GovernanceCanister } from "@dfinity/nns";
 import { Row, Spin } from 'antd';
+import { Topics, TopicWeights } from 'clients/config';
 
 
 const defaultLoaderStyle: SimulatorProps["loaderStyle"] = { margin: '30px' }
@@ -44,35 +45,50 @@ const NNS_Simulator = ({ loaderStyle }: SimulatorProps) => {
             certified: false
         })
 
-        console.log(getNeuronData?.recentBallots)
+        console.log(getNeuronData)
         console.log(listProposalsData)
         let VP: any[] = [];
+        let VPW: number = 0;
+        let totalWeight: number = 0;
         let UC: any[] = [];
 
         listProposalsData.proposals.map((item: any) => {
             // console.log(item.id)
             let temp = 0;
+            // console.log([Topics[item.topic]], totalWeight, VPW)
+            if (TopicWeights[Topics[item.topic]]) {
+                totalWeight += TopicWeights[`${Topics[item.topic]}`]
+                console.log(TopicWeights[Topics[item.topic]])
+            } else {
+                totalWeight += 1;
+            }
             getNeuronData?.recentBallots.map((item2: any) => {
                 if (item2.proposalId === item.id) {
                     console.log("Ok")
                     temp = 1;
                     setList1([...list1, item.id])
-                    VP = [...VP, item.id]
+                    VP = [...VP, item.id];
+                    console.log(item.topic, Topics[item.topic])
+                    if (TopicWeights[Topics[item.topic]]) {
+                        VPW += TopicWeights[`${Topics[item.topic]}`]
+                    } else {
+                        VPW += 1;
+                    }
                     return;
                 }
             })
             if (temp === 0) {
-                console.log("done")
-                UC = [...UC, item.id]
-                setList2([...list2, item.id])
+                console.log("done");
+                UC = [...UC, item.id];
+                setList2([...list2, item.id]);
             }
         })
 
 
         setIsLoading(false);
-        console.log(VP.length, UC);
+        console.log(VP.length, UC, VPW, totalWeight, VP);
 
-        setNNS((VP.length).toString())
+        setNNS((VPW / totalWeight).toString())
 
         // console.log(TS, TVP)
     }

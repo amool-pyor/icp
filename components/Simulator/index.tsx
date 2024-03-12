@@ -57,6 +57,7 @@ const Simulator = ({ projectList, loaderStyle }: SimulatorProps) => {
                 certified: false,
             });
             let max_dissolve_delay_per = (Number(nervousSystemParametersData.max_dissolve_delay_bonus_percentage[0])) / 100;
+            // @ts-ignore
             let dissolve_delay = (Number(getNeuronData.dissolve_state[0]?.DissolveDelaySeconds)) / (3600 * 24);
             let max_dissolve_delay_seconds = (Number(nervousSystemParametersData.max_dissolve_delay_seconds[0])) / (3600 * 24);
             let dissolve_delay_bonus = (Math.min(1, dissolve_delay / max_dissolve_delay_seconds)) * max_dissolve_delay_per;

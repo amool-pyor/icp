@@ -4,6 +4,10 @@ interface ProjectType {
     };
 };
 
+interface TopicWeightsType {
+    [key: string]: number
+};
+
 
 const Projects: ProjectType = {
     "Governance": {
@@ -40,4 +44,16 @@ const Projects: ProjectType = {
     }
 }
 
-export { Projects }
+
+const Topics: string[] = [
+    "Unspecified", "NeuronManagement", "ExchangeRate", "NetworkEconomics", "Governance", "NodeAdmin", "ParticipantManagement", "SubnetManagement", "NetworkCanisterManagement", "Kyc", "NodeProviderRewards", "SnsDecentralizationSale", "SubnetReplicaVersionManagement", "ReplicaVersionManagement", "SnsAndCommunityFund", "ApiBoundaryNodeManagement"
+]
+
+
+const TopicWeights: TopicWeightsType = {
+    "Governance": 20.0,
+    "ExchangeRate": 0.01,
+    "Remaining": 1.0,
+}
+
+export { Projects, Topics, TopicWeights }
